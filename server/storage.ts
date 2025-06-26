@@ -56,7 +56,10 @@ export class DatabaseStorage implements IStorage {
   async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values({
+        id: '1', // Add required id field
+        ...userData,
+      })
       .onConflictDoUpdate({
         target: users.id,
         set: {
@@ -79,13 +82,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAvailableSlots(vehicleType?: string): Promise<ParkingSlot[]> {
-    let query = db.select().from(parkingSlots).where(eq(parkingSlots.isOccupied, false));
-    
     if (vehicleType === "ev") {
-      query = query.where(eq(parkingSlots.type, "ev_charging"));
+      return await db.select().from(parkingSlots).where(
+        and(eq(parkingSlots.isOccupied, false), eq(parkingSlots.type, "ev_charging"))
+      );
     }
     
-    return await query;
+    return await db.select().from(parkingSlots).where(eq(parkingSlots.isOccupied, false));
   }
 
   async updateSlotOccupancy(id: number, isOccupied: boolean): Promise<void> {

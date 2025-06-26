@@ -300,37 +300,46 @@ async function initializeSampleData() {
   try {
     const existingSlots = await storage.getAllSlots();
     if (existingSlots.length > 0) {
+      console.log(`${existingSlots.length} parking slots already exist`);
       return; // Data already exists
     }
 
-    // Create sample parking slots
+    // Create sample parking slots for ground floor only to start
     const slots = [];
     const zones = ['A', 'B', 'C'];
-    const floors = ['ground', 'first'];
+    const floor = 'ground';
     
-    for (const floor of floors) {
-      for (const zone of zones) {
-        for (let i = 1; i <= 10; i++) {
-          const slotNumber = `${zone}-${i.toString().padStart(2, '0')}`;
-          const type = (zone === 'A' && i <= 2) || (zone === 'B' && i === 5) || (zone === 'C' && i === 6) 
-            ? 'ev_charging' 
-            : 'regular';
-          
-          slots.push({
-            slotNumber,
-            floor,
-            zone,
-            type,
-            isOccupied: Math.random() > 0.7, // 30% chance of being occupied
-            coordinates: { x: i * 50, y: zones.indexOf(zone) * 40 },
-          });
-        }
+    for (const zone of zones) {
+      for (let i = 1; i <= 10; i++) {
+        const slotNumber = `${zone}-${i.toString().padStart(2, '0')}`;
+        const type = (zone === 'A' && i <= 2) || (zone === 'B' && i === 5) || (zone === 'C' && i === 6) 
+          ? 'ev_charging' 
+          : 'regular';
+        
+        slots.push({
+          slotNumber,
+          floor,
+          zone,
+          type,
+          isOccupied: Math.random() > 0.8, // 20% chance of being occupied
+          coordinates: { x: i * 50, y: zones.indexOf(zone) * 40 },
+        });
       }
     }
 
-    // Create all slots
-    await Promise.all(slots.map(slot => storage.createSlot(slot)));
-    console.log(`Created ${slots.length} sample parking slots`);
+    // Create slots one by one to handle potential duplicates
+    for (const slot of slots) {
+      try {
+        await storage.createSlot(slot);
+      } catch (error) {
+        if (error.code !== '23505') { // Ignore duplicate key errors
+          console.error(`Error creating slot ${slot.slotNumber}:`, error);
+        }
+      }
+    }
+    
+    const finalSlots = await storage.getAllSlots();
+    console.log(`Initialized ${finalSlots.length} parking slots`);
   } catch (error) {
     console.error("Error initializing sample data:", error);
   }
