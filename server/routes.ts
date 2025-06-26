@@ -217,17 +217,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Twilio webhook endpoint
   app.post("/api/webhooks/twilio", async (req, res) => {
     try {
-      const webhookResult = await twilioService.handleWebhook(req.body);
+      const { Body, From } = req.body;
       
-      if (webhookResult.action === "checkout" && webhookResult.bookingId) {
-        // Handle checkout request from WhatsApp
-        // Implementation depends on how you associate phone numbers with bookings
+      if (!Body || !From) {
+        return res.status(200).send("OK");
       }
 
+      const phoneNumber = From.replace('whatsapp:', '');
+      const messageBody = Body.trim().toUpperCase();
+      
+      // Parse checkout command: "CHECKOUT 123" or "RECEIPT 123"
+      const checkoutMatch = messageBody.match(/^CHECKOUT\s+(\d+)$/);
+      const receiptMatch = messageBody.match(/^RECEIPT\s+(\d+)$/);
+      
+      if (checkoutMatch) {
+        const bookingId = parseInt(checkoutMatch[1]);
+        const booking = await storage.getBookingById(bookingId);
+        
+        if (!booking) {
+          const helpMessage = `❌ Booking #${bookingId} not found. Please check your booking ID.`;
+          const twilio = await twilioService.getTwilioClient();
+          if (twilio) {
+            await twilio.messages.create({
+              from: process.env.TWILIO_WHATSAPP_NUMBER!,
+              to: From,
+              body: helpMessage,
+            });
+          }
+          return res.status(200).send("OK");
+        }
+        
+        if (booking.status !== 'active') {
+          const message = `❌ Booking #${bookingId} is already checked out or inactive.`;
+          const twilio = await twilioService.getTwilioClient();
+          if (twilio) {
+            await twilio.messages.create({
+              from: process.env.TWILIO_WHATSAPP_NUMBER!,
+              to: From,
+              body: message,
+            });
+          }
+          return res.status(200).send("OK");
+        }
+        
+        // Process checkout
+        await storage.updateBookingStatus(bookingId, "completed", new Date());
+        await storage.updateSlotOccupancy(booking.slot.id, false);
+        
+        // Send receipt
+        await twilioService.sendReceipt({
+          userName: booking.userName,
+          slotNumber: booking.slot.slotNumber,
+          duration: booking.duration,
+          amount: parseFloat(booking.amount),
+          bookingId: booking.id
+        }, phoneNumber);
+        
+        // Broadcast update via WebSocket
+        broadcastSlotUpdate();
+        
+        return res.status(200).send("OK");
+      }
+      
+      if (receiptMatch) {
+        const bookingId = parseInt(receiptMatch[1]);
+        const booking = await storage.getBookingById(bookingId);
+        
+        if (!booking) {
+          const helpMessage = `❌ Booking #${bookingId} not found. Please check your booking ID.`;
+          const twilio = await twilioService.getTwilioClient();
+          if (twilio) {
+            await twilio.messages.create({
+              from: process.env.TWILIO_WHATSAPP_NUMBER!,
+              to: From,
+              body: helpMessage,
+            });
+          }
+          return res.status(200).send("OK");
+        }
+        
+        // Send receipt
+        await twilioService.sendReceipt({
+          userName: booking.userName,
+          slotNumber: booking.slot.slotNumber,
+          duration: booking.duration,
+          amount: parseFloat(booking.amount),
+          bookingId: booking.id
+        }, phoneNumber);
+        
+        return res.status(200).send("OK");
+      }
+      
+      // Default response for unrecognized commands
+      const helpMessage = `🅿️ *Smart Parking Help*
+      
+Available commands:
+• CHECKOUT [booking-id] - End your parking session
+• RECEIPT [booking-id] - Get your payment receipt
+
+Example: "CHECKOUT 123"`;
+      
+      const twilio = await twilioService.getTwilioClient();
+      if (twilio) {
+        await twilio.messages.create({
+          from: process.env.TWILIO_WHATSAPP_NUMBER!,
+          to: From,
+          body: helpMessage,
+        });
+      }
+      
       res.status(200).send("OK");
     } catch (error) {
       console.error("Twilio webhook error:", error);
-      res.status(500).json({ message: "Webhook processing failed" });
+      res.status(200).send("OK"); // Always return 200 to Twilio
     }
   });
 

@@ -48,6 +48,10 @@ Hello ${booking.userName}! Your parking slot has been reserved.
 
 Your slot is now reserved. Please proceed to the parking area.
 
+🚗 *Ready to leave?* Reply with:
+• "CHECKOUT ${booking.bookingId}" to end your parking session
+• "RECEIPT ${booking.bookingId}" to get your payment receipt
+
 Thank you for using our Smart Parking System!`;
 
       // In a real implementation, you would use the Twilio SDK here
@@ -131,9 +135,15 @@ We hope you had a great experience with Smart Parking System!`;
       const twilio = await this.getTwilioClient();
       if (!twilio) return null;
 
+      // Format phone number for WhatsApp (ensure it starts with country code)
+      let formattedPhone = phoneNumber.replace(/\D/g, ''); // Remove non-digits
+      if (!formattedPhone.startsWith('1') && formattedPhone.length === 10) {
+        formattedPhone = '1' + formattedPhone; // Add US country code if missing
+      }
+
       const response = await twilio.messages.create({
         from: this.whatsappNumber,
-        to: `whatsapp:${phoneNumber}`,
+        to: `whatsapp:+${formattedPhone}`,
         body: message,
       });
 
@@ -161,7 +171,7 @@ We hope you had a great experience with Smart Parking System!`;
     return { action: "unknown" };
   }
 
-  private async getTwilioClient() {
+  async getTwilioClient() {
     if (!this.accountSid || !this.authToken) return null;
     
     try {

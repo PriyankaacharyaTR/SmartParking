@@ -95,6 +95,7 @@ RESTful API endpoints organized by functionality:
 - June 26, 2025. Initial setup
 - June 26, 2025. Updated parking grid colors to white (empty), green (available), red (occupied)
 - June 26, 2025. Fixed WhatsApp message to remove logout button reference
+- June 26, 2025. Added WhatsApp checkout/receipt functionality via text commands
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
