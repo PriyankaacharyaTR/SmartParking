@@ -1,0 +1,107 @@
+Project Title: Smart Parking System (Full-Stack JavaScript)
+
+Backend: Node.js (Express or similar)
+
+Frontend: React (with live admin dashboard)
+
+Database: Supabase (PostgreSQL) or similar (optional, can use Node.js with SQLite/PostgreSQL)
+
+Real-Time Updates: WebSockets (Socket.IO)
+
+Payment: Mock payment gateway (dummy)
+
+Notifications: Twilio WhatsApp integration
+
+User Flow:
+
+1.User scans QR code and opens a form in the browser.
+
+2.Form fields: Name, Vehicle Type (dropdown: car, EV, SUV, truck, bike), Duration, License Plate, Phone Number.
+
+3.User clicks “Get Slot”:
+
+4.Backend runs slot allocation algorithms (BFS, DFS, A*) based on vehicle type and slot availability.
+
+5.Assigns optimal slot and updates database.
+
+6.Sends confirmation and payment link (mock) via WhatsApp using Twilio.
+
+7.WhatsApp message includes logout button (interactive, using Twilio webhooks).
+
+8.User checks out:
+
+9.Clicks logout button in WhatsApp.
+
+10.Backend receives webhook, logs out user, frees slot, updates database.
+
+11.Sends receipt via WhatsApp.
+
+Admin Dashboard:
+
+1.Real-time grid visualization of all slots (color-coded: free, occupied, EV charging).
+
+2.Live updates via WebSockets.
+
+3.Shows all user details, payment info, check-in/check-out times.
+
+4.Table view of current bookings.
+
+Technical Requirements:
+
+-Frontend:Responsive, mobile-friendly UI.
+
+-QR scanner integration (can use device camera).
+
+-Form validation.
+
+Admin dashboard with real-time grid and data tables.
+
+Backend:
+
+-REST API for form submission, slot allocation, payment, and check-out.
+
+-WebSocket server for real-time admin updates.
+
+-Twilio webhook handling for WhatsApp interactions.
+
+-Mock payment processing.
+
+Database:
+
+-Tables for slots (id, type, is_occupied, coordinates), bookings (id, user_name, vehicle_type, license_plate, phone, slot_id, checkin, checkout).
+
+-Role-based access for admin and users.
+
+-Real-Time:WebSocket connection between admin dashboard and backend.
+
+-Live updates for slot status and booking info.
+
+-Notifications:Twilio WhatsApp integration for booking confirmations, payment links, logout button, and receipts.
+
+-Algorithms:Implement slot allocation using BFS, DFS, and A* (prioritize A* for optimal slot assignment).
+
+-Expose algorithm selection via API if needed.
+
+-Error Handling:Graceful handling of form errors, payment failures, and WhatsApp/webhook errors.
+
+Security:
+
+HTTPS, role-based authentication, data validation.
+
+setup for backend, frontend, and database (optional).
+
+Instructions for Bolt AI:
+
+Use only JavaScript/TypeScript for backend and frontend.
+
+Generate all necessary folders, files, and boilerplate.
+
+Implement all features as described above.
+
+use the modern attractive UI use animations and transition to make it look cool and classy use the nice attractive colours and UI. 
+
+Use modern, production-ready code and best practices.
+
+Generate documentation and README with setup and usage instructions.
+
+give the project in react. 
