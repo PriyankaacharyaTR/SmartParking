@@ -93,6 +93,9 @@ RESTful API endpoints organized by functionality:
 
 ## Changelog
 - June 26, 2025. Initial setup
+- June 26, 2025. Updated parking grid colors to white (empty), green (available), red (occupied)
+- June 26, 2025. Fixed WhatsApp message to remove logout button reference
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
+Preferred parking grid colors: White for empty slots, green for available, red for occupied.

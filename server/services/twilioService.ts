@@ -48,7 +48,7 @@ Hello ${booking.userName}! Your parking slot has been reserved.
 
 Your slot is now reserved. Please proceed to the parking area.
 
-To check out, simply click the button below when you're ready to leave.`;
+Thank you for using our Smart Parking System!`;
 
       // In a real implementation, you would use the Twilio SDK here
       const twilio = await this.getTwilioClient();

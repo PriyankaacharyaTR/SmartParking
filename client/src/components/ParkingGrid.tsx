@@ -25,16 +25,16 @@ export function ParkingGrid({ slots }: ParkingGridProps) {
 
   const getSlotColor = (slot: ParkingSlot) => {
     if (slot.isOccupied) {
-      return slot.type === "ev_charging" ? "bg-amber-500" : "bg-red-500";
+      return "bg-red-500 text-white";
     }
-    return slot.type === "ev_charging" ? "bg-yellow-400" : "bg-green-500";
+    return "bg-green-500 text-white";
   };
 
   const getSlotStatus = (slot: ParkingSlot) => {
     if (slot.isOccupied) {
-      return slot.type === "ev_charging" ? "EV Charging" : "Occupied";
+      return "Occupied";
     }
-    return slot.type === "ev_charging" ? "EV Available" : "Available";
+    return "Available";
   };
 
   return (
@@ -44,20 +44,16 @@ export function ParkingGrid({ slots }: ParkingGridProps) {
           <h3 className="text-xl font-bold text-gray-800">Parking Grid - Ground Floor</h3>
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-white border border-gray-300 rounded"></div>
+              <span>Empty</span>
+            </div>
+            <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded"></div>
               <span>Available</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-red-500 rounded"></div>
               <span>Occupied</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-yellow-400 rounded"></div>
-              <span>EV Available</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-amber-500 rounded"></div>
-              <span>EV Charging</span>
             </div>
           </div>
         </div>
@@ -83,7 +79,7 @@ export function ParkingGrid({ slots }: ParkingGridProps) {
                     return (
                       <div
                         key={slotNumber}
-                        className="w-12 h-8 bg-gray-200 rounded shadow-sm flex items-center justify-center text-xs font-medium text-gray-500"
+                        className="w-12 h-8 bg-white border border-gray-300 rounded shadow-sm flex items-center justify-center text-xs font-medium text-gray-500"
                       >
                         {slotNumber.replace('-', '')}
                       </div>
