@@ -30,7 +30,7 @@ export interface IStorage {
   createSlot(slot: InsertParkingSlot): Promise<ParkingSlot>;
   
   // Booking operations
-  createBooking(booking: InsertBooking): Promise<Booking>;
+  createBooking(booking: any): Promise<Booking>;
   getBookingById(id: number): Promise<BookingWithSlot | undefined>;
   getActiveBookings(): Promise<BookingWithSlot[]>;
   getBookingBySlotId(slotId: number): Promise<Booking | undefined>;
@@ -104,7 +104,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Booking operations
-  async createBooking(booking: InsertBooking): Promise<Booking> {
+  async createBooking(booking: any): Promise<Booking> {
     const [newBooking] = await db.insert(bookings).values(booking).returning();
     return newBooking;
   }

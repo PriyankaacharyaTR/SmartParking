@@ -54,12 +54,16 @@ To check out, simply click the button below when you're ready to leave.`;
       const twilio = await this.getTwilioClient();
       if (!twilio) return null;
 
+      // Format phone number for WhatsApp (ensure it starts with country code)
+      let formattedPhone = phoneNumber.replace(/\D/g, ''); // Remove non-digits
+      if (!formattedPhone.startsWith('1') && formattedPhone.length === 10) {
+        formattedPhone = '1' + formattedPhone; // Add US country code if missing
+      }
+      
       const response = await twilio.messages.create({
         from: this.whatsappNumber,
-        to: `whatsapp:${phoneNumber}`,
+        to: `whatsapp:+${formattedPhone}`,
         body: message,
-        // Add interactive buttons for checkout
-        // Note: This requires Twilio's Interactive Message templates
       });
 
       return response.sid;

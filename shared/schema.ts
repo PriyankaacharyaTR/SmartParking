@@ -97,6 +97,11 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
   checkInTime: true,
   createdAt: true,
   twilioMessageSid: true,
+  amount: true,
+  status: true,
+  paymentStatus: true,
+  checkOutTime: true,
+  slotId: true,
 });
 
 export const insertQrCodeSchema = createInsertSchema(qrCodes).omit({
