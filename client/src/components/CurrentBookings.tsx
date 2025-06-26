@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { BookingWithSlot } from "@/lib/types";
-import { MessageCircle, LogOut, Clock, AlertTriangle } from "lucide-react";
+import { MessageCircle, LogOut, Clock, AlertTriangle, Car } from "lucide-react";
 
 interface CurrentBookingsProps {
   bookings: BookingWithSlot[];
