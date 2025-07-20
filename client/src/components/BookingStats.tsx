@@ -36,7 +36,7 @@ export function BookingStats({ stats }: BookingStatsProps) {
     },
     {
       title: "Revenue Today",
-      value: `$${stats.revenue.toLocaleString()}`,
+      value: `₹${stats.revenue.toLocaleString()}`,
       icon: DollarSign,
       bgColor: "bg-yellow-100",
       iconColor: "text-yellow-600",

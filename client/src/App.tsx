@@ -7,6 +7,7 @@ import QRGenerator from "@/pages/qr-generator";
 import BookingForm from "@/pages/booking-form";
 import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
+import { UsersProvider } from "@/hooks/use-users";
 
 function Router() {
   return (
@@ -23,10 +24,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <UsersProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </UsersProvider>
     </QueryClientProvider>
   );
 }

@@ -1,8 +1,12 @@
 export class QRService {
   static generateQRCodeUrl(zone: string, floor: string): string {
+    // Use environment variables or fallback to localhost with dynamic detection
+    const hostIp = process.env.HOST_IP || '172.17.13.254'; 
+    const port = process.env.PORT || 5000;
+    
     const baseUrl = process.env.REPLIT_DOMAINS 
       ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
-      : 'http://localhost:5000';
+      : `http://${hostIp}:${port}`;
     
     const bookingUrl = `${baseUrl}/book?zone=${encodeURIComponent(zone)}&floor=${encodeURIComponent(floor)}`;
     return bookingUrl;

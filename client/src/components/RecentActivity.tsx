@@ -1,13 +1,16 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { RecentActivity as Activity } from "@/lib/types";
-import { LogIn, LogOut, MessageCircle, User } from "lucide-react";
+import { LogIn, LogOut, MessageCircle, User, Trash2 } from "lucide-react";
+import { speakMessage } from "@/lib/speechUtils";
 
 interface RecentActivityProps {
   activities: Activity[];
+  onClearActivities?: () => void;
 }
 
-export function RecentActivity({ activities }: RecentActivityProps) {
+export function RecentActivity({ activities, onClearActivities }: RecentActivityProps) {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "check-in":
@@ -49,10 +52,30 @@ export function RecentActivity({ activities }: RecentActivityProps) {
     return `${diffInDays} days ago`;
   };
 
+  const handleClearActivities = () => {
+    if (onClearActivities) {
+      onClearActivities();
+      speakMessage("Recent activity has been cleared");
+    }
+  };
+
   return (
     <Card>
       <CardContent className="p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Recent Activity</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-gray-800">Recent Activity</h3>
+          {activities.length > 0 && onClearActivities && (
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={handleClearActivities}
+              className="flex items-center gap-1 px-2 py-1"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span>Clear</span>
+            </Button>
+          )}
+        </div>
         
         {activities.length === 0 ? (
           <div className="text-center py-8 text-gray-500">

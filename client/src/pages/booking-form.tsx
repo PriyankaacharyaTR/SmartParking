@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useUsers } from "@/hooks/use-users";
+import { speakMessage } from "@/lib/speechUtils";
 import { Car, User, Clock, CreditCard, Phone, CheckCircle, QrCode, BarChart3, Smartphone } from "lucide-react";
 
 const bookingSchema = z.object({
@@ -28,6 +30,7 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 export default function BookingForm() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { addUser } = useUsers();
   const [bookingResult, setBookingResult] = useState<any>(null);
   const [zone, setZone] = useState("A");
   const [floor, setFloor] = useState("Ground Floor");
@@ -64,6 +67,20 @@ export default function BookingForm() {
     },
     onSuccess: (data) => {
       setBookingResult(data);
+      
+      // Add user to the users context
+      const formData = form.getValues();
+      addUser({
+        userName: formData.userName,
+        phoneNumber: formData.phoneNumber,
+        vehicleType: formData.vehicleType,
+        licensePlate: formData.licensePlate
+      });
+      
+      // Speak confirmation message
+      const confirmationMessage = `Booking confirmed! Your parking slot ${data.slot.slotNumber} has been reserved for ${data.booking.duration} hours. Thank you for using Smart Parking System.`;
+      speakMessage(confirmationMessage);
+      
       toast({
         title: "Slot Booked Successfully!",
         description: `Your slot ${data.slot.slotNumber} has been reserved.`,
@@ -146,6 +163,15 @@ export default function BookingForm() {
                   className="w-full"
                 >
                   Book Another Slot
+                </Button>
+                
+                <Button
+                  onClick={() => speakMessage(`Booking confirmed! Your parking slot ${bookingResult.slot.slotNumber} has been reserved for ${bookingResult.booking.duration} hours. Thank you for using Smart Parking System.`)}
+                  variant="secondary"
+                  className="w-full"
+                >
+                  <Smartphone className="mr-2 h-4 w-4" /> 
+                  Repeat Voice Confirmation
                 </Button>
               </div>
             </CardContent>
